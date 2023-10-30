@@ -1,0 +1,33 @@
+/* Your styles go here */
+@import url("bootstrap/dist/css/bootstrap.min.css");
+@import url("bootstrap-icons/font/bootstrap-icons.css");
+
+.hero {
+    background-color: gold;
+}
+
+div.video {
+    background-color: #eee;
+    border: 2px solid grey;
+    padding: 1rem;
+    width: 60%;
+    margin: 1rem auto;
+}
+
+video {
+    width: 100%;
+}
+
+.container {
+    width: 70%;
+    margin: 0 auto;
+}
+.field {
+    display: flex;
+}
+.field > input[type="text"],
+.field > input[type="number"] {
+    border: 1px solid skyblue;
+    border-radius: 8px;
+    width: 100%;
+}
