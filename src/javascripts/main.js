@@ -1,103 +1,107 @@
 //TODO - Your ES6 JavaScript code (if any) goes here
 import "bootstrap"
 
-import {addGuest } from './guests'
 
-document.querySelector("#guest-form").onsubmit = addGuest
-// document.getElementById('guest-form')
 
-// Define variables
-let n = 11
-const h = 100
-let is_active = true
+let initial_cards = [
+    {
+        place: "Salt Lake City, Utah",
+        description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptas atque itaque quod facere vel nostrum, quae illo alias consequatur voluptatem. Laboriosam quod possimus nulla sequi dolorem expedita aut voluptatibus asperiores!",
+        poster: "https://images.unsplash.com/photo-1597778602022-f2d97b8c1493?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1287&q=80"
+    }, {
+        place: "Ancient Cathedral, Salt Lake City, Utah",
+        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi dignissimos fugiat aperiam, doloribus eius deleniti dicta labore repellendus, eaque odit ut nam? Id autem est voluptatem, dicta dolores voluptates nisi.",
+        poster: "https://images.unsplash.com/photo-1603937372023-251acb738be8?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1287&q=80"
+    }
+]
 
-if(is_active){
-
+function hideForm() {
+    document.querySelector("#myform").classList.add("d-none")
+    document.querySelector("#cards").classList.remove("d-none")
 }
 
-if(!is_active){
-
+function hideCards() {
+    document.querySelector("#myform").classList.remove('d-none')
+    document.querySelector("#cards").classList.add("d-none")
 }
 
-if (n % 2 == 0){
-    console.log(n, " is an even number.")
-} else {
-    console.log(n, " is an odd number.")
+function getCards() {
+    if (localStorage.getItem("cards") && localStorage.getItem("cards") != "[]") {
+        return JSON.parse(localStorage.getItem("cards"))
+    }
+    else {
+        return initial_cards
+    }
 }
 
-function printCharacters(quote){
-    let out =""
-    for(let i = 0; i < quote.length; i++){
-        out += quote[i] + '\n'
+function addNewCard(event) {
+    event.preventDefault()
+
+    let t = document.querySelector("#place").value
+    let d = document.querySelector("#description").value
+    let p = document.querySelector("#poster").value
+
+    let cards = getCards()
+
+    if (t && d && p) {
+        let card = { place: t, description: d, poster: p }
+        cards.push(card)
+        localStorage.setItem("cards", JSON.stringify(cards))
     }
 
-    return out
+
+
+    this.reset()
+    displayCards()
 }
 
-console.log(printCharacters("To be or not to be")) 
-// let i = 0
-// while(i < quote.length){
-//     console.log(quote[i])
-//     i++
-// }
+function displayCards() {
 
-// i = 0
-// do {
-//     console.log(quote[i])
-//     i++
-// } while(i < quote.length)
+    let cards = getCards()
+    let cards_html = ''
+    let ndx = 0
 
-// console.log(quote, " has ", quote.length, "characters")
+    for (let c of cards) {
+        cards_html += `
+        <div class="card col mb-3" data-ndx="${ndx}">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img src="${c.poster}" class="img-fluid rounded-start" alt="${c.place}">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">${c.place}</h5>
+        <p class="card-text">${c.description}.</p>
+        <p class="card-text">
+        <button class="btn btn-danger to-delete">Delete</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
 
-// console.log(quote.charAt(0))
+        `
+        ndx++
+    }
 
+    
+    document.querySelector("#cards").innerHTML = cards_html
 
+    document.querySelectorAll('.to-delete').forEach(function(btn){
+        btn.onclick=function(event){
+            if (confirm("Are you sure you want to delete this card?")){
+                cards.splice(event.target.closest('.col').dataset.ndx,1)
+                localStorage.setItem("cards",JSON.stringify(cards))
+                displayCards()
+            }   
+        }
+    })
 
-
-
-
-
-let day = 5
-
-if (day == 1 || day == 7){
-    console.log("weekend")
-} else if(day > 1 && day < 7 ){
-    console.log('a week day')
-} else {
-    console.log("invalid day")
-}
-
-day = 2
-switch(day){
-    case 1:
-    case 7:
-        console.log("weekend")
-        break;
-    case 2:
-    case 3:
-    case 4:
-    case 5:
-    case 6:
-        console.log('weekday')
-        break;
-    default:
-        console.log("invalid day")
+    hideForm()
 
 }
 
-
-
-
-console.log(n)
-
-function calculateY(){
-    let x = parseInt(document.querySelector("input").value)
-    let y = 4 * x + 12
-
-    document.querySelector(".result").innerHTML = y
-}
-
-document.querySelector("#get-result").onclick = calculateY
-
-
-
+document.querySelector("#myform").onsubmit = addNewCard
+document.querySelector("#new_card").onclick = hideCards
+document.querySelector(".to-cancel").onclick = hideForm
+displayCards()
